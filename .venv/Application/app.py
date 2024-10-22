@@ -99,7 +99,7 @@ else:
 
     # Add logo in the first column
     with col1:
-        st.image("A:\Pragati_Telecom\.venv\Application\WhatsApp Image 2024-10-22 at 23.41.52_ece6d38f.jpg", width=100)
+        st.image("https://i.postimg.cc/1txpDNCc/Whats-App-Image-2024-10-22-at-23-41-52-ece6d38f.jpg",width=100)
 
     # Add title in the second column, aligned to the left
     with col2:
