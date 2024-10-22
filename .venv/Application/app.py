@@ -104,12 +104,17 @@ def login_page():
         username = st.text_input("Username")
         password = st.text_input("Password", type='password')
         submit_button = st.form_submit_button("Login")
-        if submit_button and username in users and users[username]["password"] == password:
-            st.session_state.update({"role": users[username]["role"], "logged_in": True})
-            st.success(f"Logged in as {username}")
-            st.experimental_rerun()  # Refresh the app
-        else:
-            st.error("Invalid username or password")
+        
+        # Check if the submit button was pressed
+        if submit_button:
+            # Validate the username and password
+            if username in users and users[username]["password"] == password:
+                st.session_state.update({"role": users[username]["role"], "logged_in": True})
+                st.success(f"Logged in as {username}")
+                st.experimental_rerun()  # Refresh the app
+            else:
+                st.error("Invalid username or password")  # Show error only after trying to log in
+
 
 if 'logged_in' not in st.session_state:
     login_page()
