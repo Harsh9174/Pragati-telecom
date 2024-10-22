@@ -97,24 +97,35 @@ def admin_data_export():
     else:
         st.warning("No data available to export.")
 
+
+placeholder = st.empty()
+
+
 def login_page():
     """Render the login page."""
-    st.title("Login Page")
-    with st.form(key='login_form'):
+    
+    with placeholder.form("login"):
+        st.markdown("#### Enter your credentials")
         username = st.text_input("Username")
-        password = st.text_input("Password", type='password')
+        password = st.text_input("Password", type="password")
         submit_button = st.form_submit_button("Login")
-        
-        # Check if the submit button was pressed
-        if submit_button:
-            # Validate the username and password
-            if username in users and users[username]["password"] == password:
-                st.session_state.update({"role": users[username]["role"], "logged_in": True})
-                st.success(f"Logged in as {username}")
-                st.experimental_rerun()  # Refresh the app
-            else:
-                st.error("Invalid username or password")  # Show error only after trying to log in
+        if submit_button and username in users and users[username]["password"] == password:
+            
+            st.session_state.update({"role": users[username]["role"], "logged_in": True})
+            st.success(f"Logged in as {username}")
 
+        else:
+            if submit_button:
+                st.error("Invalid username or password")
+
+def logout():
+    """Clear session state and redirect to the login page."""
+    st.session_state.clear()  # Clear session state
+    st.success("Logged out successfully!")  # Optional message
+
+# Render the logout button at the top right
+if 'logged_in' in st.session_state and st.session_state['logged_in']:
+    st.sidebar.button("Logout", on_click=logout)  # Add logout button
 
 if 'logged_in' not in st.session_state:
     login_page()
