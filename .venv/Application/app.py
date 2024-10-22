@@ -2,6 +2,7 @@ import streamlit as st
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
+import pymysql
 
 users = {
     "Alice": {"password": "alice123", "role": "Marketing"},
@@ -13,18 +14,36 @@ users = {
 
 def create_connection():
     try:
-        connection = mysql.connector.connect(
-            host='mysql-387e63d6-harsh-1fc8.g.aivencloud.com',
-            port = 20739
-            database='pragati_telecom',
-            user='avnadmin',
-            password='AVNS_PJRuQlfZ5Ojs_dqCWPX'
+        timeout = 10
+        connection = pymysql.connect(
+        charset="utf8mb4",
+        cursorclass=pymysql.cursors.DictCursor,
+        db="pragati_telecom",
+        host="mysql-387e63d6-harsh-1fc8.g.aivencloud.com",
+        password="AVNS_PJRuQlfZ5Ojs_dqCWPX",
+        read_timeout=timeout,
+        port=20739,
+        user="avnadmin",
+        write_timeout =timeout,
         )
         return connection
     except Error as e:
         st.error(f"Error: {e}")
         return None
-    
+
+# def create_connection():
+#     try:
+#         connection = mysql.connector.connect(
+#             host='127.0.0.1',
+#             database='pragati_telecom',
+#             user='root',
+#             password='Harsh@9174'
+#         )
+#         return connection
+#     except Error as e:
+#         st.error(f"Error: {e}")
+#         return None
+
 def insert_data(retailer_name, retailer_phone, product_name, retailer_address, employee_name, date_entered):
     connection = create_connection()
     if connection:
