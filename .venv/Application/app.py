@@ -14,10 +14,10 @@ users = {
 def create_connection():
     try:
         connection = mysql.connector.connect(
-            host='127.0.0.1',
+            host='mysql-387e63d6-harsh-1fc8.g.aivencloud.com',
             database='pragati_telecom',
-            user='root',
-            password='Harsh@9174'
+            user='avnadmin',
+            password='AVNS_PJRuQlfZ5Ojs_dqCWPX'
         )
         return connection
     except Error as e:
