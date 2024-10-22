@@ -15,6 +15,7 @@ def create_connection():
     try:
         connection = mysql.connector.connect(
             host='mysql-387e63d6-harsh-1fc8.g.aivencloud.com',
+            port = 20739
             database='pragati_telecom',
             user='avnadmin',
             password='AVNS_PJRuQlfZ5Ojs_dqCWPX'
