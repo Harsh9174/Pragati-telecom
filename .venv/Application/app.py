@@ -14,7 +14,7 @@ users = {
 def create_connection():
     try:
         connection = mysql.connector.connect(
-            host='localhost',
+            host='127.0.0.1',
             database='pragati_telecom',
             user='root',
             password='Harsh@9174'
