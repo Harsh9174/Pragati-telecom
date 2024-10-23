@@ -29,7 +29,7 @@ def insert_data(data):
                 sql_query = """
                     INSERT INTO Replacement_info 
                     (Recieved_date, Shop_name, Shop_address, phone_number, Product_name, Brand, Problem, Recieved_by, Solution, Checked_by, Send_by, serial_number,Qty,Send_date, image) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, '', '', '', %s,0,NULL, '')
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s,NULL, NULL,NULL, %s,0,NULL,NULL)
                 """
                 cursor.execute(sql_query, data)
                 conn.commit()
@@ -85,13 +85,15 @@ def admin_data_export():
 
 
 def fetch_shop_names():
-    """Fetch existing shop names from the Replacement_info table."""
+    """Fetch existing shop names, addresses, and phone numbers from the Replacement_info table."""
     with create_connection() as conn:
         if conn:
             with conn.cursor() as cursor:
-                cursor.execute("SELECT DISTINCT Shop_name FROM Replacement_info")
+                cursor.execute("SELECT DISTINCT Shop_name, Shop_address, phone_number FROM Replacement_info order by Shop_name")
                 rows = cursor.fetchall()
-                return [row['Shop_name'] for row in rows] if rows else []
+                # Return a dictionary with shop names as keys and a tuple of (address, phone_number) as values
+                return {row['Shop_name']: (row['Shop_address'], row['phone_number']) for row in rows} if rows else {}
+
 
 col1, col2 = st.columns([1, 4])
 with col1:
@@ -111,17 +113,33 @@ if action == "Add New Record":
     with st.expander("Add New Record", expanded=True):
         Recieved_date = st.date_input("Received date", key="add_date")
         
-        # Create a selectbox for existing shop names
-        selected_shop_name = st.selectbox("Select Existing Shop Name or Enter New", ["🏪Add Shop➕"] + existing_shop_names , key="add_name",index = None)
+        # Fetch existing shop names along with addresses and phone numbers
+        existing_shops = fetch_shop_names()
+        shop_names = list(existing_shops.keys())
+        
 
-        # If "Other" is selected, allow manual entry
+        # Create a selectbox for existing shop names
+        selected_shop_name = st.selectbox("Select Existing Shop Name or Enter New", ["🏪Add Shop➕"] + shop_names, key="add_name", index=None)
+
+        # If "Add Shop" is selected, allow manual entry
         if selected_shop_name == "🏪Add Shop➕":
             Shop_name = st.text_input("Enter New Shop Name", key="new_shop_name")
-        else:
-            Shop_name = selected_shop_name
+            Shop_address = st.text_input("Shop Address", key="add_address")
+            phone_number = st.text_input("Retailer Phone (Numeric Only)", key="add_phone", max_chars=10)
 
-        Shop_address = st.text_input("Shop Address", key="add_address")
-        phone_number = st.text_input("Retailer Phone (Numeric Only)", key="add_phone", max_chars=10)
+        elif selected_shop_name is not None:
+            # Get address and phone for the selected shop
+            Shop_address, phone_number = existing_shops[selected_shop_name]  # Get address and phone for the selected shop
+            Shop_name = selected_shop_name
+            Shop_address = st.text_input("Shop Address", value=Shop_address, key="add_address", disabled=False)  # Disable manual editing
+            phone_number = st.text_input("Retailer Phone (Numeric Only)", value=str(phone_number), key="add_phone", disabled=False)  # Disable manual editing
+        else:
+            # If nothing is selected, display empty fields
+            Shop_name = ""
+            Shop_address = st.text_input("Shop Address", key="add_address")
+            phone_number = st.text_input("Retailer Phone (Numeric Only)", key="add_phone", max_chars=10)
+
+
         Product_name = st.text_input("Product Name", key="add_product")
         Serial_Number = st.text_input("Serial Number", key="add_serial")
         Brand = st.text_input("Brand", key="add_brand")
@@ -130,7 +148,6 @@ if action == "Add New Record":
 
     if st.button("Submit", key="add_submit"):
         # Validate inputs
-        # Separate checks for each condition
         if not phone_number.isdigit() or len(phone_number) != 10:
             st.warning("Please enter a valid 10-digit phone number.")
         elif not Problem.strip():
@@ -151,9 +168,7 @@ if action == "Add New Record":
                 Recieved_by,
                 Serial_Number.strip().title(),
             )
-            insert_data(data)# Insert data only if all validations pass
-
-
+            insert_data(data)  # Insert data only if all validations pass
 
 elif action == "Edit Existing Record":
     with st.expander("Edit Existing Record", expanded=True):
@@ -178,7 +193,7 @@ elif action == "Edit Existing Record":
                 if not record_df.empty:
                     # Fetch the selected record details
                     selected_record = record_df.iloc[0]
-                    
+
                     # Create text inputs and dropdowns for the rest of the fields
                     selected_shop_name = st.text_input("Shop Name", value=selected_record['Shop_name'], key="edit_shop_name")
                     shop_address = st.text_input("Shop Address", value=selected_record['Shop_address'], key="edit_shop_address")
@@ -188,14 +203,44 @@ elif action == "Edit Existing Record":
                     problem = st.text_input("Problem", value=selected_record['Problem'], key="edit_problem")
                     serial_number = st.text_input("Serial Number", value=selected_record['serial_number'], key="edit_serial_number")
 
-                    # Select boxes for solution, checked by, and send by
-                    solution = st.selectbox("Solution", solutions_list, key="edit_solution", index=None)
-                    checked_by = st.selectbox("Checked By", emp_list, key="edit_checked_by", index=None)
-                    send_by = st.selectbox("Send By", emp_list, key="edit_send_by", index=None)
+                    if selected_record['Solution'] is None:
+                        solution_options = solutions_list  # Use full options if no existing solution
+                        solution_index = None  # Default to the first option
+                    else:
+                        solution_options = [selected_record['Solution']] # Add existing solution to options
+                        solution_index = solution_options.index(selected_record['Solution'])  # Set index to existing solution
+
+                    solution = st.selectbox("Solution", solution_options, index=solution_index, key="edit_solution")
+                    
+
+                    if selected_record['Checked_by'] is None:
+                        checkby_options = emp_list  # Use full options if no existing solution
+                        checkby_index = None  # Default to the first option
+                    else:
+                        checkby_options = [selected_record['Checked_by']] # Add existing solution to options
+                        checkby_index = checkby_options.index(selected_record['Checked_by'])  # Set index to existing solution
+
+                    checked_by = st.selectbox("Checked By", checkby_options, index=checkby_index, key="edit_checkby")
+
+                    # if selected_record['Send_by'] is None:
+                    #     sendby_options = emp_list  # Use full options if no existing value
+                    #     sendby_index = 0  # Default to the first option
+                    # else:
+                    #     sendby_options = emp_list  # Use full options
+
+                    #     if selected_record['Send_by'] in sendby_options:
+                    #         sendby_index = sendby_options.index(selected_record['Send_by'])  # Set index to existing value
+                    #     else:
+                    #         sendby_index = 0  # Default to the first option if existing value is not found
+
+                    send_by = st.selectbox("Send by", emp_list,index=None, key="edit_send_by")
+
+                    # send_by = st.selectbox("Send by", sendby_options, index=sendby_index, key="edit_send_by")
+
                     send_date = st.date_input("Send Date", value=None, key="edit_send_date")
 
                     if st.button("Update", key="edit_submit"):
-                        # Prepare updated data
+                        # Prepare updated data, checking if fields are empty
                         updated_data = (
                             solution,
                             checked_by,
