@@ -167,7 +167,7 @@ elif action == "Edit Existing Record":
                         update_data(record_selection, data)  # Update data only if valid
 
 # Display Data after buttons
-st.header("Existing Data")
+st.header("Replacement Data")
 df = fetch_data()
 st.dataframe(df)
 
