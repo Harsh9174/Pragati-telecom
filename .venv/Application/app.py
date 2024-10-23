@@ -112,7 +112,7 @@ if action == "Add New Record":
         Recieved_date = st.date_input("Received date", key="add_date")
         
         # Create a selectbox for existing shop names
-        selected_shop_name = st.selectbox("Select Existing Shop Name or Enter New", existing_shop_names + ["Other"], key="add_name",index = None)
+        selected_shop_name = st.selectbox("Select Existing Shop Name or Enter New", existing_shop_names + ["Add New Shop+"], key="add_name",index = None)
 
         # If "Other" is selected, allow manual entry
         if selected_shop_name == "Add New Shop+":
