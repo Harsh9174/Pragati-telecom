@@ -143,7 +143,7 @@ elif action == "Edit Existing Record":
                 # Display fields for editing, pre-filled with selected record data
                 Shop_name = st.text_input("Shop Name", value=selected_record['Shop_name'], key="edit_name")
                 Shop_address = st.text_input("Shop Name", value=selected_record['Shop_address'], key="edit_address")
-                phone = st.text_input("RPhone (Numeric Only)", value=selected_record['phone_number'], key="edit_phone")
+                phone = st.text_input("Phone (Numeric Only)", value=selected_record['phone_number'], key="edit_phone")
                 product_name = st.text_input("Product Name", value=selected_record['Product_name'], key="edit_product")
                 brand = st.text_input("Brand", value=selected_record['Brand'], key="edit_brand")
                 problem = st.text_input("Problem", value=selected_record['Problem'], key="edit_problem")
