@@ -91,7 +91,7 @@ col1, col2 = st.columns([1, 4])
 with col1:
     st.image("https://i.postimg.cc/1txpDNCc/Whats-App-Image-2024-10-22-at-23-41-52-ece6d38f.jpg", width=100)
 with col2:
-    st.markdown("<h1 style='color: black;'>Pragati Telecom</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color: black; font-size: 40px; font-weight: bold;'>Pragati Telecom</h1>", unsafe_allow_html=True)
 
 # Data management section
 st.title("Replacement Data Entry")
@@ -108,7 +108,7 @@ if action == "Add New Record":
         Product_name = st.text_input("Product Name", key="add_product")
         Brand = st.text_input("Brand", key="add_brand")
         Problem = st.text_input("Problem (Mandatory)", key="add_problem")  # Make it clear this is mandatory
-        Recieved_by = st.selectbox("Recieved By", emp_list, key="add_recby")
+        Recieved_by = st.selectbox("Recieved By",emp_list, key="add_recby",index=None)
 
     if st.button("Submit", key="add_submit"):
         # Validate inputs
@@ -147,11 +147,11 @@ elif action == "Edit Existing Record":
                 product_name = st.text_input("Product Name", value=selected_record['Product_name'], key="edit_product")
                 brand = st.text_input("Brand", value=selected_record['Brand'], key="edit_brand")
                 problem = st.text_input("Problem", value=selected_record['Problem'], key="edit_problem")
-                Recieved_by = st.text_input("Product Name", value=selected_record['Recieved_by'], key="edit_recieveby")
-                Solution = st.selectbox("Solution", solutions_list,key = "Edit_solution")
-                Checked_by = st.selectbox("Checked By", emp_list,key = "Edit_checkedby")
-                Send_by = st.selectbox("Send By", emp_list,key = "Edit_sendby")
-                Send_date = st.date_input("Send date", key="add_senddate")
+                Recieved_by = st.text_input("Recieved by", value=selected_record['Recieved_by'], key="edit_recieveby")
+                Solution = st.selectbox("Solution", solutions_list,key = "Edit_solution",index=None)
+                Checked_by = st.selectbox("Checked By", emp_list,key = "Edit_checkedby",index=None)
+                Send_by = st.selectbox("Send By", emp_list,key = "Edit_sendby",index=None)
+                Send_date = st.date_input("Send date", key="add_senddate",value=None)
                 
                 if st.button("Submit", key="edit_submit"):
                     # Validate inputs
