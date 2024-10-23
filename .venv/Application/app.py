@@ -127,8 +127,7 @@ if action == "Add New Record":
                 format_text(Problem),
                 format_text(Recieved_by),
                 Serial_Number,
-                qty
-            )
+                qty)
             insert_data(data)  # Insert data only if valid
 
 elif action == "Edit Existing Record":
@@ -167,7 +166,7 @@ elif action == "Edit Existing Record":
                     Solution = st.selectbox("Solution", solutions_list, key="edit_solution", index=None)
                     Checked_by = st.selectbox("Checked By", emp_list, key="edit_checkedby", index=None)
                     Send_by = st.selectbox("Send By", emp_list, key="edit_sendby", index=None)
-                    Send_date = st.date_input("Send Date", value=selected_record['Send_date'], key="edit_senddate")
+                    Send_date = st.date_input("Send Date", value=None, key="edit_senddate",)
                     
                     if st.button("Submit", key="edit_submit"):
                             data = (
