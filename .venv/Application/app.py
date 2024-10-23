@@ -1,16 +1,9 @@
 import streamlit as st
 import pymysql
 import pandas as pd
-from datetime import datetime
 
-# User credentials
-users = {
-    "Alice": {"password": "alice123", "role": "Marketing"},
-    "Bob": {"password": "bob123", "role": "Marketing"},
-    "Charlie": {"password": "charlie123", "role": "Shop"},
-    "Diana": {"password": "diana123", "role": "Shop"},
-    "admin_user": {"password": "admin123", "role": "Admin"},
-}
+solutions_list = ["Repaired", "Replace", "Return", "OOW", "NOT PT"]  # Replace with actual solutions
+emp_list = ["Pratik", "Harsh", "Neeraj", "Saran", "Preeti", "Bhola", "Anshu", "Anshuman", "Suraj"]  # Replace with actual employee names
 
 def create_connection():
     """Establish a database connection."""
@@ -35,38 +28,12 @@ def insert_data(data):
             with conn.cursor() as cursor:
                 sql_query = """
                     INSERT INTO Replacement_info 
-                    (Retailer_name, Retailer_phone, Product_name, Retailer_address, Employee_name, Dateentered) 
-                    VALUES (%s, %s, %s, %s, %s, %s)
+                    (Recieved_date, Shop_name, Shop_address, phone_number, Product_name, Brand, Problem, Recieved_by, Solution, Checked_by, Send_by, Send_date, image) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, '', '', '', NULL, '')
                 """
                 cursor.execute(sql_query, data)
                 conn.commit()
                 st.success("Data inserted successfully!")
-
-def capitalize_name(name):
-    """Capitalize the first letter of each word in the name."""
-    return ' '.join(word.capitalize() for word in name.split())
-
-def marketing_data_entry():
-    """Render the Marketing Staff data entry form."""
-    st.title("Marketing Staff Data Entry")
-    with st.form(key='data_entry_form'):
-        retailer_name = st.text_input("Retailer Name")
-        retailer_phone = st.text_input("Retailer Phone", max_chars=10)
-        product_name = st.text_input("Product Name")
-        retailer_address = st.text_area("Retailer Address")
-        employee_name = st.text_input("Employee Name")
-        date_entered = st.date_input("Date Entered", value=datetime.today())
-        submit_button = st.form_submit_button("Submit")
-        if submit_button:
-            data = (
-                capitalize_name(retailer_name),
-                retailer_phone,
-                product_name,
-                retailer_address,
-                capitalize_name(employee_name),
-                date_entered,
-            )
-            insert_data(data)
 
 def fetch_data():
     """Fetch data from the Replacement_info table."""
@@ -77,71 +44,132 @@ def fetch_data():
                 rows = cursor.fetchall()
                 return pd.DataFrame(rows) if rows else pd.DataFrame()  # Return an empty DataFrame if no rows
 
+def update_data(retailer_id, data):
+    """Update an existing record in the Replacement_info table."""
+    with create_connection() as conn:
+        if conn:
+            with conn.cursor() as cursor:
+                sql_query = """
+                    UPDATE Replacement_info 
+                    SET Solution=%s, Checked_by=%s, Send_by=%s, Send_date=%s 
+                    WHERE Retailer_id=%s
+                """
+                cursor.execute(sql_query, (*data, retailer_id))
+                conn.commit()
+                st.success("Data updated successfully!")
+
+def fetch_data_by_date(selected_date):
+    """Fetch data from the Replacement_info table based on selected date."""
+    with create_connection() as conn:
+        if conn:
+            with conn.cursor() as cursor:
+                sql_query = "SELECT * FROM Replacement_info WHERE Recieved_date = %s"
+                cursor.execute(sql_query, (selected_date,))
+                rows = cursor.fetchall()
+                return pd.DataFrame(rows) if rows else pd.DataFrame()
+
 def admin_data_export():
     """Render the Admin Data Export page."""
-    st.title("Admin Data Export")
     df = fetch_data()
     
     if not df.empty:
-        st.write("### Data Preview:")
-        st.dataframe(df)
-
         # Create an Excel file from the DataFrame
         excel_file = "Replacement_info_data.xlsx"
         df.to_excel(excel_file, index=False)
 
-        # Provide download button that appears immediately after data is ready
+        # Provide download button
         with open(excel_file, "rb") as file:
             st.download_button(label="Download Excel", data=file, file_name=excel_file, key="download_excel")
-
     else:
         st.warning("No data available to export.")
 
+def format_text(input_text):
+    """Format the input text: trim whitespace and capitalize.""" 
+    return input_text.strip().title() 
 
-placeholder = st.empty()
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.image("https://i.postimg.cc/1txpDNCc/Whats-App-Image-2024-10-22-at-23-41-52-ece6d38f.jpg", width=100)
+with col2:
+    st.markdown("<h1 style='color: black;'>Pragati Telecom</h1>", unsafe_allow_html=True)
 
+# Data management section
+st.title("Replacement Data Entry")
 
-def login_page():
-    """Render the login page."""
-    
-    with placeholder.form("login"):
-        st.markdown("#### Enter your credentials")
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
-        submit_button = st.form_submit_button("Login")
-        if submit_button and username in users and users[username]["password"] == password:
-            
-            st.session_state.update({"role": users[username]["role"], "logged_in": True})
-            st.success(f"Logged in as {username}")
+# Create radio buttons for selecting action (Add or Edit)
+action = st.radio("Select Action:", ("Add New Record", "Edit Existing Record"), horizontal=True)
 
+if action == "Add New Record":
+    with st.expander("Add New Record", expanded=True):
+        Recieved_date = st.date_input("Recieved date", key="add_date")
+        Shop_name = st.text_input("Shop Name", key="add_name")
+        Shop_address = st.text_input("Shop Address", key="add_address")
+        phone_number = st.text_input("Retailer Phone (Numeric Only)", key="add_phone", max_chars=10)
+        Product_name = st.text_input("Product Name", key="add_product")
+        Brand = st.text_input("Brand", key="add_brand")
+        Problem = st.text_input("Problem (Mandatory)", key="add_problem")  # Make it clear this is mandatory
+        Recieved_by = st.selectbox("Recieved By", emp_list, key="add_recby")
+
+    if st.button("Submit", key="add_submit"):
+        # Validate inputs
+        if not Problem.strip() and not Shop_name.strip() and (not phone_number.isdigit() or len(phone_number) != 10):  # Check if Problem is empty
+            st.warning("Please enter a valid phone number and problem.")
         else:
-            if submit_button:
-                st.error("Invalid username or password")
+            data = (
+                Recieved_date,
+                format_text(Shop_name),
+                format_text(Shop_address),
+                format_text(phone_number),
+                format_text(Product_name),
+                format_text(Brand),
+                format_text(Problem),
+                format_text(Recieved_by),
+            )
+            insert_data(data)  # Insert data only if valid
 
-def logout():
-    """Clear session state and redirect to the login page."""
-    st.session_state.clear()  # Clear session state
-    st.success("Logged out successfully!")  # Optional message
+elif action == "Edit Existing Record":
+    with st.expander("Edit Existing Record", expanded=True):
+        selected_date = st.date_input("Select Recieved Date", key="selected_date")
+        
+        if selected_date:
+            df = fetch_data_by_date(selected_date)
+            if not df.empty:
+                # Create a dropdown to select an existing record based on the selected date
+                record_selection = st.selectbox("Select Record to Edit", df['Retailer_id'].tolist(), key="edit_record")
 
-# Render the logout button at the top right
-if 'logged_in' in st.session_state and st.session_state['logged_in']:
-    st.sidebar.button("Logout", on_click=logout)  # Add logout button
+                # Fetch the selected record details
+                selected_record = df[df['Retailer_id'] == record_selection].iloc[0]
+                
+                # Display fields for editing, pre-filled with selected record data
+                Shop_name = st.text_input("Shop Name", value=selected_record['Shop_name'], key="edit_name")
+                Shop_address = st.text_input("Shop Name", value=selected_record['Shop_address'], key="edit_address")
+                phone = st.text_input("RPhone (Numeric Only)", value=selected_record['phone_number'], key="edit_phone")
+                product_name = st.text_input("Product Name", value=selected_record['Product_name'], key="edit_product")
+                brand = st.text_input("Brand", value=selected_record['Brand'], key="edit_brand")
+                problem = st.text_input("Problem", value=selected_record['Problem'], key="edit_problem")
+                Recieved_by = st.text_input("Product Name", value=selected_record['Recieved_by'], key="edit_recieveby")
+                Solution = st.selectbox("Solution", solutions_list,key = "Edit_solution")
+                Checked_by = st.selectbox("Checked By", emp_list,key = "Edit_checkedby")
+                Send_by = st.selectbox("Send By", emp_list,key = "Edit_sendby")
+                Send_date = st.date_input("Send date", key="add_senddate")
+                
+                if st.button("Submit", key="edit_submit"):
+                    # Validate inputs
+                    if not phone.isdigit() or phone == "":
+                        st.warning("Please enter a valid phone number.")
+                    else:
+                        data = (
+                            Solution, 
+                            Checked_by, # Keep existing solution for now, update if needed
+                            Send_by,
+                            Send_date
+                        )
+                        update_data(record_selection, data)  # Update data only if valid
 
-if 'logged_in' not in st.session_state:
-    login_page()
-else:
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        st.image("https://i.postimg.cc/1txpDNCc/Whats-App-Image-2024-10-22-at-23-41-52-ece6d38f.jpg", width=100)
-    with col2:
-        st.markdown("<h1 style='color: black;'>Pragati Telecom</h1>", unsafe_allow_html=True)
+# Display Data after buttons
+st.header("Existing Data")
+df = fetch_data()
+st.dataframe(df)
 
-    st.sidebar.title("Navigation")
-    PAGES = {
-        "Marketing Staff": marketing_data_entry,
-    }
-    if st.session_state["role"] == "Admin":
-        PAGES["Admin Data Export"] = admin_data_export
-        PAGES["Shop Staff"] = lambda: st.write("Shop Staff Content")
-    selection = st.sidebar.radio("Go to", list(PAGES.keys()))
-    PAGES[selection]()  # Call the selected page function
+# Always show the download button since we've removed the login logic
+admin_data_export()
