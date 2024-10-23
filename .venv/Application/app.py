@@ -115,7 +115,7 @@ if action == "Add New Record":
         selected_shop_name = st.selectbox("Select Existing Shop Name or Enter New", existing_shop_names + ["Other"], key="add_name",index = None)
 
         # If "Other" is selected, allow manual entry
-        if selected_shop_name == "Other":
+        if selected_shop_name == "Add New Shop+":
             Shop_name = st.text_input("Enter New Shop Name", key="new_shop_name")
         else:
             Shop_name = selected_shop_name
