@@ -1,0 +1,28 @@
+-- create table Replacement_info(
+-- Retailer_id int auto_increment primary key,
+-- Recieved_date date,
+-- Shop_name varchar(100),
+-- Shop_address varchar(300),
+-- phone_number varchar(10) not null,
+-- Product_name varchar(1000),
+-- Brand varchar(1000),
+-- Problem varchar(1000) not null,
+-- Recieved_by varchar(100),
+-- Solution varchar(1000),
+-- Checked_by varchar(100),
+-- Send_by varchar(100),
+-- Send_date datetime,
+-- image varchar(5000))
+
+
+-- create table employe(
+-- EID int primary key,
+-- ENAME varchar(100));
+
+-- create table solution(
+-- id int primary key,
+-- solution varchar(1000))
+
+
+-- insert into solution(id,solution)
+-- values(5,'NOT PT')
