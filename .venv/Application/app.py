@@ -183,24 +183,28 @@ elif action == "Search Records":
         # Search input (either phone number or shop name)
         search_term = st.text_input("Enter Phone Number or Shop Name", key="search_term")
 
-        if search_term:
-            # Fetch the entire data
-            df = fetch_data()
+        # Add a search button below the input bar
+        if st.button("🔍 Search", key="search_button"):
+            if search_term:
+                # Fetch the entire data
+                df = fetch_data()
 
-            # Check if the search term is numeric (indicating a phone number) or not (indicating a shop name)
-            if search_term.isdigit():
-                # Search by phone number
-                search_results = df[df['phone_number'].astype(str).str.contains(search_term)]
-            else:
-                # Search by shop name
-                search_results = df[df['Shop_name'].str.contains(search_term, case=False)]
+                # Check if the search term is numeric (indicating a phone number) or not (indicating a shop name)
+                if search_term.isdigit():
+                    # Search by phone number
+                    search_results = df[df['phone_number'].astype(str).str.contains(search_term)]
+                else:
+                    # Search by shop name
+                    search_results = df[df['Shop_name'].str.contains(search_term, case=False)]
 
-            # Display the search results
-            if not search_results.empty:
-                st.write(f"Found {len(search_results)} records matching '{search_term}':")
-                st.dataframe(search_results)
+                # Display the search results
+                if not search_results.empty:
+                    st.write(f"Found {len(search_results)} records matching '{search_term}':")
+                    st.dataframe(search_results)
+                else:
+                    st.warning(f"No records found for '{search_term}'")
             else:
-                st.warning(f"No records found for '{search_term}'")
+                st.warning("Please enter a search term.")
 
 # Display Data after buttons
 st.header("Replacement Data")
