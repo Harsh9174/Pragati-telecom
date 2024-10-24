@@ -5,6 +5,8 @@ import pandas as pd
 solutions_list = ["Repaired", "Replace", "Return", "OOW", "NOT PT"]  # Replace with actual solutions
 emp_list = ["Pratik", "Harsh", "Neeraj", "Saran", "Preeti", "Bhola", "Anshu", "Anshuman", "Suraj"]  # Replace with actual employee names
 
+st.set_page_config(layout="wide")
+
 def create_connection():
     """Establish a database connection."""
     try:
