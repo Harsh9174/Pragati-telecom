@@ -101,7 +101,7 @@ st.markdown(
     <style>
     .logo-title-container {
         display: flex;
-        align-items: right;
+        align-items: left;
         justify-content: flex-start;
         flex-wrap: wrap;
     }
@@ -134,7 +134,7 @@ st.markdown(
             <img src="https://i.postimg.cc/1txpDNCc/Whats-App-Image-2024-10-22-at-23-41-52-ece6d38f.jpg" width="100">
         </div>
         <div class="title-container">
-            <h1 style='color: black; font-size: 40px; font-weight: bold;'>Pragati Telecom</h1>
+            <h1 style='color: black; font-size: 30px; font-weight: bold;'>Pragati Telecom</h1>
         </div>
     </div>
     """,
