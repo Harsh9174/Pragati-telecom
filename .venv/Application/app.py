@@ -96,12 +96,56 @@ def fetch_shop_names():
                 # Return a dictionary with shop names as keys and a tuple of (address, phone_number) as values
                 return {row['Shop_name']: (row['Shop_address'], row['phone_number']) for row in rows} if rows else {}
 
+st.markdown(
+    """
+    <style>
+    .logo-title-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+    .logo-container {
+        flex: 0 0 100px;
+        margin-right: 10px;
+    }
+    .title-container {
+        flex: 1;
+    }
+    @media (max-width: 768px) {
+        .logo-title-container {
+            justify-content: center;
+            text-align: center;
+        }
+        .logo-container {
+            margin: 0 auto 10px auto;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-col1, col2 = st.columns([1, 4])
-with col1:
-    st.image("https://i.postimg.cc/1txpDNCc/Whats-App-Image-2024-10-22-at-23-41-52-ece6d38f.jpg", width=100)
-with col2:
-    st.markdown("<h1 style='color: black; font-size: 40px; font-weight: bold;'>Pragati Telecom</h1>", unsafe_allow_html=True)
+# Container for logo and title
+st.markdown(
+    """
+    <div class="logo-title-container">
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/1txpDNCc/Whats-App-Image-2024-10-22-at-23-41-52-ece6d38f.jpg" width="100">
+        </div>
+        <div class="title-container">
+            <h1 style='color: black; font-size: 40px; font-weight: bold;'>Pragati Telecom</h1>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# col1, col2 = st.columns([1, 4])
+# with col1:
+#     st.image("https://i.postimg.cc/1txpDNCc/Whats-App-Image-2024-10-22-at-23-41-52-ece6d38f.jpg", width=100)
+# with col2:
+#     st.markdown("<h1 style='color: black; font-size: 40px; font-weight: bold;'>Pragati Telecom</h1>", unsafe_allow_html=True)
 
 # Data management section
 st.title("Replacement Data Entry")
