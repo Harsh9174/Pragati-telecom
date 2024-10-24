@@ -101,7 +101,7 @@ col1, col2 = st.columns([1, 4])
 with col1:
     st.image("https://i.postimg.cc/1txpDNCc/Whats-App-Image-2024-10-22-at-23-41-52-ece6d38f.jpg", width=100)
 with col2:
-    st.markdown("<h1 style='color: black; font-size: 30px; font-weight: bold;'>Pragati Telecom</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color: black; font-size: 10px; font-weight: bold;'>Pragati Telecom</h1>", unsafe_allow_html=True)
 
 # Data management section
 st.title("Replacement Data Entry")
