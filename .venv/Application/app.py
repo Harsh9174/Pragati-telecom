@@ -101,7 +101,7 @@ st.markdown(
     <style>
     .logo-title-container {
         display: flex;
-        align-items: center;
+        align-items: right;
         justify-content: flex-start;
         flex-wrap: wrap;
     }
