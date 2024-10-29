@@ -42,7 +42,7 @@ def fetch_data():
     with create_connection() as conn:
         if conn:
             with conn.cursor() as cursor:
-                cursor.execute("""SELECT concat('PT_',Retailer_id) as Job_ID,Recieved_date, Shop_name, Shop_address, phone_number, Product_name, Brand, Problem, Recieved_by,serial_number, Solution, Checked_by, Send_by,Send_date, image FROM Replacement_info""")
+                cursor.execute("""SELECT concat('PT_',Retailer_id) as Job_ID,Recieved_date, Shop_name, Shop_address, phone_number, Product_name, Brand, Problem, Recieved_by,serial_number, Solution, Checked_by, Send_by,Send_date, image FROM Replacement_info order by Retailer_id desc""")
                 rows = cursor.fetchall()
                 return pd.DataFrame(rows) if rows else pd.DataFrame()  # Return an empty DataFrame if no rows
 
