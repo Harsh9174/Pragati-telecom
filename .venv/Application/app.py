@@ -84,8 +84,7 @@ def admin_data_export():
             st.download_button(label="Download Excel", data=file, file_name=excel_file, key="download_excel")
     else:
         st.warning("No data available to export.")
-
-
+        
 def fetch_shop_names():
     """Fetch existing shop names, addresses, and phone numbers from the Replacement_info table."""
     with create_connection() as conn:
