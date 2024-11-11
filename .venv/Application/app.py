@@ -3,7 +3,7 @@ import pymysql
 import pandas as pd
 
 solutions_list = ["Repaired", "Replace", "Return", "OOW", "NOT PT"]  # Replace with actual solutions
-emp_list = ["Pratik", "Harsh", "Neeraj", "Saran", "Preeti", "Bhola", "Anshu", "Anshuman", "Suraj"]  # Replace with actual employee names
+emp_list = ["Pratik", "Harsh", "Neeraj", "Saran", "Preeti", "Bhola", "Anshu", "Anshuman", "Suraj", "Anjali"]  # Replace with actual employee names
 
 st.set_page_config(layout="wide")
 
@@ -31,7 +31,7 @@ def insert_data(data):
                 sql_query = """
                     INSERT INTO Replacement_info 
                     (Recieved_date, Shop_name, Shop_address, phone_number, Product_name, Brand, Problem, Recieved_by, Solution, Checked_by, Send_by, serial_number,Qty,Send_date, image) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s,NULL, NULL,NULL, %s,0,NULL,NULL)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s,NULL, NULL,NULL, %s,%s,NULL,NULL)
                 """
                 cursor.execute(sql_query, data)
                 conn.commit()
@@ -42,7 +42,7 @@ def fetch_data():
     with create_connection() as conn:
         if conn:
             with conn.cursor() as cursor:
-                cursor.execute("""SELECT concat('PT_',Retailer_id) as Job_ID,Recieved_date, Shop_name, Shop_address, phone_number, Product_name, Brand, Problem, Recieved_by,serial_number, Solution, Checked_by, Send_by,Send_date, image FROM Replacement_info order by Retailer_id desc""")
+                cursor.execute("""SELECT concat('PT_',Retailer_id) as Job_ID,Recieved_date, Shop_name, Shop_address, phone_number, Product_name, Brand, Problem, Recieved_by,serial_number, Solution, Checked_by, Send_by, Qty, Send_date, image FROM Replacement_info order by Retailer_id desc""")
                 rows = cursor.fetchall()
                 return pd.DataFrame(rows) if rows else pd.DataFrame()  # Return an empty DataFrame if no rows
 
@@ -187,6 +187,7 @@ if action == "Add New Record":
 
 
         Product_name = st.text_input("Product Name", key="add_product")
+        Quantity = st.number_input("Quantity",key= "add_qty",step=1,min_value=1)
         Serial_Number = st.text_input("Serial Number", key="add_serial")
         Brand = st.text_input("Brand", key="add_brand")
         Problem = st.text_input("Problem (Mandatory)", key="add_problem")  # Make it clear this is mandatory
@@ -209,6 +210,7 @@ if action == "Add New Record":
                 Shop_address.strip().title(),
                 phone_number.strip(),
                 Product_name.strip().title(),
+                Quantity,
                 Brand.strip().title(),
                 Problem.strip().title(),
                 Recieved_by,
@@ -302,7 +304,7 @@ elif action == "Edit Existing Record":
 elif action == "Search Records":
     with st.expander("Search Records", expanded=True):
         # Search input (either phone number or shop name)
-        search_term = st.text_input("Enter Phone Number or Shop Name", key="search_term")
+        search_term = st.text_input("Enter Phone Number or Name or Address", key="search_term")
 
         # Add a search button below the input bar
         if st.button("🔍 Search", key="search_button"):
@@ -316,7 +318,9 @@ elif action == "Search Records":
                     search_results = df[df['phone_number'].astype(str).str.contains(search_term)]
                 else:
                     # Search by shop name
-                    search_results = df[df['Shop_name'].str.contains(search_term, case=False)]
+                    search_results = df[
+                    df['Shop_name'].str.contains(search_term, case=False, na=False) | 
+                    df['Shop_address'].str.contains(search_term, case=False, na=False)]
 
                 # Display the search results
                 if not search_results.empty:
