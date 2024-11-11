@@ -210,11 +210,11 @@ if action == "Add New Record":
                 Shop_address.strip().title(),
                 phone_number.strip(),
                 Product_name.strip().title(),
-                Quantity,
                 Brand.strip().title(),
                 Problem.strip().title(),
                 Recieved_by,
                 Serial_Number.strip().title(),
+                int(Quantity)
             )
             insert_data(data)  # Insert data only if all validations pass
 
