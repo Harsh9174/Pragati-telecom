@@ -50,9 +50,10 @@ def fetch_records_by_date(recieved_date):
     response = supabase.table("repl_info_view").select("*").eq("recieved_date", formatted_date).execute()
     return response.data  # Return all records if the query was successful
 
-def update_record(retailer_id, solution, checked_by, send_by, send_date):
+def update_record(retailer_id, serial_number,solution, checked_by, send_by, send_date):
     # Prepare the update data
     update_data = {
+        "serial_number": serial_number,
         "solution": solution,
         "checked_by": checked_by,
         "send_by": send_by,
@@ -225,7 +226,7 @@ elif action == "Edit Existing Record":
                     product_name = st.text_input("Product Name", value=selected_record['product_name'], key="edit_product_name",disabled=True)
                     brand = st.text_input("Brand", value=selected_record['brand'], key="edit_brand",disabled=True)
                     problem = st.text_input("Problem", value=selected_record['problem'], key="edit_problem",disabled=True)
-                    serial_number = st.text_input("Serial Number", value=selected_record['serial_number'], key="edit_serial_number",disabled=True)
+                    serial_number = st.text_input("Remarks", value=selected_record['serial_number'], key="edit_serial_number",disabled=True)
                     
 
                     if selected_record['solution'] is None:
@@ -261,7 +262,7 @@ elif action == "Edit Existing Record":
                 if st.button("Update", key="edit_submit"):
                     try:
                         send_date_str = str(send_date) if send_date else None
-                        update_record(retailer_id,solution,checked_by,send_by,send_date_str)
+                        update_record(retailer_id,serial_number,solution,checked_by,send_by,send_date_str)
                         st.success("Data submitted successfully!")
                     except Exception as e:
                         st.error(f"Error submitting data: {e}")    # Update data only if valid
