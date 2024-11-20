@@ -226,7 +226,7 @@ elif action == "Edit Existing Record":
                     product_name = st.text_input("Product Name", value=selected_record['product_name'], key="edit_product_name",disabled=True)
                     brand = st.text_input("Brand", value=selected_record['brand'], key="edit_brand",disabled=True)
                     problem = st.text_input("Problem", value=selected_record['problem'], key="edit_problem",disabled=True)
-                    serial_number = st.text_input("Remarks", value=selected_record['serial_number'], key="edit_serial_number",disabled=True)
+                    serial_number = st.text_input("Remarks", value=selected_record['serial_number'], key="edit_serial_number")
                     
 
                     if selected_record['solution'] is None:
